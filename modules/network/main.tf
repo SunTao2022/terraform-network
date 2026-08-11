@@ -1,33 +1,33 @@
 resource "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
+  name     = var.resource_group_name
   location = var.location
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name = var.vnet_name
-  location = var.location
+  name                = var.vnet_name
+  location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
-  address_space = ["10.0.0.0/16"]
+  address_space       = ["10.0.0.0/16"]
 }
 
 resource "azurerm_subnet" "web" {
-  name = "web-cidr"
+  name                 = "web-cidr"
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes = [var.web_cidr]
-  resource_group_name = azurerm_resource_group.rg.name
+  address_prefixes     = [var.web_cidr]
+  resource_group_name  = azurerm_resource_group.rg.name
 }
 
 resource "azurerm_subnet" "db" {
-  name = "db-cidr"
-  resource_group_name = azurerm_resource_group.rg.name
+  name                 = "db-cidr"
+  resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes = [var.db_cidr]
+  address_prefixes     = [var.db_cidr]
 
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name = "web-nsg"
-  location = var.location
+  name                = "web-nsg"
+  location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
 
   security_rule {
@@ -44,6 +44,6 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "web-nsg" {
-  subnet_id = azurerm_subnet.web.id
+  subnet_id                 = azurerm_subnet.web.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
